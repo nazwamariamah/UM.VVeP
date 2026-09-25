@@ -16,7 +16,7 @@
                     <path stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v12a2 2 0 002 2z" />
 
                 </svg>
 
@@ -40,7 +40,7 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5">
 
-            <a href="{{ route('category.show', $category->id) }}"
+            <a href="{{ url('/cabinet') }}"
                 title="Kembali ke Sub Kategori"
                 class="group inline-flex items-center justify-center
                        w-11 h-11
@@ -302,7 +302,7 @@
                             {{-- TAMBAH SUB CATEGORY --}}
                             @if ($category->sub_category == null)
 
-                                <a href="{{ route('subcategory.create', $category->id) }}"
+                                <a href="{{ route('subcategory.create', ['category_id' => $category->id]) }}"
                                     class="group inline-flex
                                            items-center
                                            justify-center
@@ -481,7 +481,7 @@
                                                     <path stroke-linecap="round"
                                                         stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v12a2 2 0 002 2z" />
+                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
 
                                                 </svg>
 

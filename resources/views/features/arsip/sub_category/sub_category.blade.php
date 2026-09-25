@@ -26,7 +26,7 @@
         {{-- BACK BUTTON --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5">
 
-            <a href="{{ route('cabinet.show', $category->cabinet_id) }}"
+            <a href="{{ url('/cabinet') }}"
                 class="group inline-flex items-center justify-center w-11 h-11
                        bg-white/90 backdrop-blur-xl
                        text-gray-600 rounded-xl

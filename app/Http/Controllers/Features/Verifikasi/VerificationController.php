@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Features\Verifikasi;
 use App\Http\Controllers\Controller;
 use App\Models\BudgetSubmission;
 use App\Models\Notification;
+use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,50 +21,100 @@ class VerificationController extends Controller
      * DAFTAR PENGAJUAN VERIFIKASI
      * ==================================================
      */
-public function index(Request $request)
-{
-    $applyFilters = function ($query) use ($request) {
-        return $query
-            ->when($request->filled('search'), function ($q) use ($request) {
-                $q->where('budget_submission_name', 'LIKE', '%' . $request->search . '%');
-            })
-            ->when($request->filled('divisi'), function ($q) use ($request) {
-    $q->whereHas('user', function ($q3) use ($request) {
-        $q3->where('role', $request->divisi);
-    });
-})
-            
-            ->when($request->filled('start_date') && $request->filled('end_date'), function ($q) use ($request) {
-                $q->whereBetween('created_at', [
-                    $request->start_date . ' 00:00:00',
-                    $request->end_date . ' 23:59:59',
-                ]);
-            });
-    };
+    public function index(Request $request)
+    {
+        $applyFilters = function ($query) use ($request) {
+            return $query
+                ->when($request->filled('search'), function ($q) use ($request) {
+                    $q->where(
+                        'budget_submission_name',
+                        'LIKE',
+                        '%' . $request->search . '%'
+                    );
+                })
 
-    $all_submit = $applyFilters(BudgetSubmission::query())
-        ->latest()
-        ->paginate(10, ['*'], 'all_submit')
-        ->appends($request->query());
+                ->when($request->filled('divisi'), function ($q) use ($request) {
+                    $q->whereHas('user', function ($q3) use ($request) {
+                        $q3->where(
+                            'role',
+                            $request->divisi
+                        );
+                    });
+                })
 
-    $not_check_submit = $applyFilters(
-            BudgetSubmission::where('requirements_status', 'Belum Diperiksa')
+                ->when(
+                    $request->filled('start_date') &&
+                    $request->filled('end_date'),
+                    function ($q) use ($request) {
+                        $q->whereBetween('created_at', [
+                            $request->start_date . ' 00:00:00',
+                            $request->end_date . ' 23:59:59',
+                        ]);
+                    }
+                );
+        };
+
+        $all_submit = $applyFilters(
+            BudgetSubmission::query()
         )
-        ->latest()
-        ->paginate(10, ['*'], 'not_check')
-        ->appends($request->query());
+            ->latest()
+            ->paginate(
+                10,
+                ['*'],
+                'all_submit'
+            )
+            ->appends(
+                $request->query()
+            );
 
-    $my_proses = $applyFilters(
-            BudgetSubmission::where('requirements_status', 'Belum Lengkap')
-                ->where('verification_status', 0)
-                ->whereNotNull('finance_officers_id')
+        $not_check_submit = $applyFilters(
+            BudgetSubmission::where(
+                'requirements_status',
+                'Belum Diperiksa'
+            )
         )
-        ->latest()
-        ->paginate(5, ['*'], 'my_proses')
-        ->appends($request->query());
+            ->latest()
+            ->paginate(
+                10,
+                ['*'],
+                'not_check'
+            )
+            ->appends(
+                $request->query()
+            );
 
-    return view('features.verifikasi.list_verifikasi', compact('all_submit', 'not_check_submit', 'my_proses'));
-}
+        $my_proses = $applyFilters(
+            BudgetSubmission::where(
+                'requirements_status',
+                'Belum Lengkap'
+            )
+                ->where(
+                    'verification_status',
+                    0
+                )
+                ->whereNotNull(
+                    'finance_officers_id'
+                )
+        )
+            ->latest()
+            ->paginate(
+                5,
+                ['*'],
+                'my_proses'
+            )
+            ->appends(
+                $request->query()
+            );
+
+        return view(
+            'features.verifikasi.list_verifikasi',
+            compact(
+                'all_submit',
+                'not_check_submit',
+                'my_proses'
+            )
+        );
+    }
 
     /**
      * ==================================================
@@ -100,6 +151,27 @@ public function index(Request $request)
             'funding_source',
         ])->findOrFail($id);
 
+        /**
+         * ==================================================
+         * DATA METODE PEMBAYARAN
+         * ==================================================
+         *
+         * INI PERBAIKAN ERROR:
+         *
+         * Blade menggunakan:
+         * $payment_method
+         *
+         * Maka variabel tersebut wajib dikirim ke view.
+         */
+        $payment_method = PaymentMethod::orderBy(
+            'payment_method_name'
+        )->get();
+
+        /**
+         * ==================================================
+         * CEK FILE CHECKLIST
+         * ==================================================
+         */
         if (
             !$pengajuan->path_file_requirements_status ||
             !Storage::disk('private')->exists(
@@ -117,6 +189,11 @@ public function index(Request $request)
                 $pengajuan->path_file_requirements_status
             );
 
+        /**
+         * ==================================================
+         * LOAD EXCEL
+         * ==================================================
+         */
         $spreadsheet = IOFactory::load(
             $filePathMetadata
         );
@@ -216,16 +293,13 @@ public function index(Request $request)
 
         /**
          * ==================================================
-         * DEFAULT STATUS DOKUMEN YANG MASIH KOSONG
+         * DEFAULT STATUS DOKUMEN KOSONG
          * ==================================================
          *
-         * HANYA baris yang benar-benar kosong statusnya
-         * yang akan diberi:
+         * Jika semua D-H kosong:
          *
          * D = Y
          * G = Y
-         *
-         * Dokumen yang sudah memiliki status TIDAK disentuh.
          */
         $adaPerubahan = false;
 
@@ -297,9 +371,6 @@ public function index(Request $request)
                         ->getValue()
                 );
 
-            /**
-             * HANYA jika seluruh status kosong.
-             */
             if (
                 $valueD === '' &&
                 $valueE === '' &&
@@ -472,6 +543,13 @@ public function index(Request $request)
             $keterangan[] =
                 $keteranganValue;
 
+            /**
+             * PENTING:
+             * no = nomor tampilan.
+             * row = nomor baris Excel.
+             *
+             * JANGAN gunakan row sebagai nomor tampilan.
+             */
             $checklistRows[] = [
                 'index' =>
                     $index,
@@ -529,6 +607,13 @@ public function index(Request $request)
                 )
                 ->getValue();
 
+        /**
+         * ==================================================
+         * RETURN VIEW
+         * ==================================================
+         *
+         * payment_method WAJIB dimasukkan.
+         */
         return view(
             'features.verifikasi.check-pengajuan',
             compact(
@@ -544,7 +629,8 @@ public function index(Request $request)
                 'keterangan',
                 'catatan',
                 'excelRows',
-                'checklistRows'
+                'checklistRows',
+                'payment_method'
             )
         );
     }
@@ -798,7 +884,7 @@ public function index(Request $request)
                 '';
 
             /**
-             * Reset status lama
+             * Reset status lama.
              */
             foreach (
                 ['D', 'E', 'F', 'G', 'H'] as $column
@@ -1132,7 +1218,7 @@ public function index(Request $request)
 
                     'message' =>
                         'Pengajuan "' .
-                        $pengajuan->pengajuan_name .
+                        $pengajuan->budget_submission_name .
                         '" siap ditandatangani.',
 
                     'type' =>
@@ -1193,17 +1279,10 @@ public function index(Request $request)
                 );
         }
 
-        /**
-         * ==================================================
-         * MASTER TEMPLATE
-         * ==================================================
-         */
         $templatePath =
             $this->getChecklistTemplatePath();
 
-        if (
-            !$templatePath
-        ) {
+        if (!$templatePath) {
             return back()
                 ->with(
                     'error',
@@ -1236,9 +1315,7 @@ public function index(Request $request)
             );
 
         /**
-         * ==================================================
          * TAMBAH KE MASTER
-         * ==================================================
          */
         if (
             $templateExistingRow === null
@@ -1267,30 +1344,18 @@ public function index(Request $request)
                 }
             }
 
-            /**
-             * Tidak ada baris kosong.
-             * Insert sebelum Catatan.
-             */
             if (
                 $insertRow === null
             ) {
                 $insertRow =
                     $templateCatatanRow;
 
-                /**
-                 * PENTING:
-                 * INSERT DAHULU.
-                 */
                 $templateWorksheet
                     ->insertNewRowBefore(
                         $insertRow,
                         1
                     );
 
-                /**
-                 * Setelah insert,
-                 * copy style dari baris sebelumnya.
-                 */
                 $styleSourceRow =
                     $insertRow > 7
                         ? $insertRow - 1
@@ -1313,9 +1378,6 @@ public function index(Request $request)
                 );
             }
 
-            /**
-             * Kosongkan B-I.
-             */
             foreach (
                 range('B', 'I') as $column
             ) {
@@ -1326,19 +1388,12 @@ public function index(Request $request)
                     );
             }
 
-            /**
-             * Nama dokumen.
-             */
             $templateWorksheet
                 ->setCellValue(
                     "C{$insertRow}",
                     $namaDokumenBaru
                 );
 
-            /**
-             * Default MASTER:
-             * Ada + Lengkap.
-             */
             $templateWorksheet
                 ->setCellValue(
                     "D{$insertRow}",
@@ -1419,10 +1474,6 @@ public function index(Request $request)
                     $namaDokumenBaru
                 );
 
-            /**
-             * Kalau sudah ada,
-             * jangan reset status.
-             */
             if (
                 $existingRow !== null
             ) {
@@ -1521,13 +1572,6 @@ public function index(Request $request)
                     $namaDokumenBaru
                 );
 
-            /**
-             * Pengajuan aktif:
-             * default TIDAK ADA status D.
-             *
-             * F = Y
-             * G = Y
-             */
             $targetWorksheet
                 ->setCellValue(
                     "F{$insertRow}",
@@ -1622,16 +1666,12 @@ public function index(Request $request)
         }
 
         /**
-         * ==================================================
          * MASTER
-         * ==================================================
          */
         $templatePath =
             $this->getChecklistTemplatePath();
 
-        if (
-            $templatePath
-        ) {
+        if ($templatePath) {
             $templateFullPath =
                 Storage::disk('private')->path(
                     $templatePath
@@ -1680,9 +1720,7 @@ public function index(Request $request)
         }
 
         /**
-         * ==================================================
          * SEMUA PENGAJUAN AKTIF
-         * ==================================================
          */
         $activeSubmissions =
             BudgetSubmission::where(
@@ -1730,11 +1768,6 @@ public function index(Request $request)
                 continue;
             }
 
-            /**
-             * HANYA C yang berubah.
-             *
-             * D-I TIDAK DISENTUH.
-             */
             $worksheet->setCellValue(
                 "C{$row}",
                 $namaBaru
@@ -1803,16 +1836,12 @@ public function index(Request $request)
         }
 
         /**
-         * ==================================================
          * MASTER
-         * ==================================================
          */
         $templatePath =
             $this->getChecklistTemplatePath();
 
-        if (
-            $templatePath
-        ) {
+        if ($templatePath) {
             $templateFullPath =
                 Storage::disk('private')->path(
                     $templatePath
@@ -1861,9 +1890,7 @@ public function index(Request $request)
         }
 
         /**
-         * ==================================================
-         * HAPUS DARI PENGAJUAN AKTIF
-         * ==================================================
+         * PENGAJUAN AKTIF
          */
         $activeSubmissions =
             BudgetSubmission::where(
@@ -1970,7 +1997,7 @@ public function index(Request $request)
 
     /**
      * ==================================================
-     * CARI BARIS DOKUMEN BERDASARKAN NAMA
+     * CARI BARIS BERDASARKAN NAMA DOKUMEN
      * ==================================================
      */
     private function findRowByDocumentName(
@@ -2011,7 +2038,7 @@ public function index(Request $request)
 
     /**
      * ==================================================
-     * RENAME NOMOR DOKUMEN
+     * NOMOR DOKUMEN
      * ==================================================
      */
     private function renumberDocumentRows(
@@ -2042,9 +2069,6 @@ public function index(Request $request)
                 continue;
             }
 
-            /**
-             * Routing Slip tetap dihitung sebagai nomor.
-             */
             $worksheet->setCellValue(
                 "B{$row}",
                 $nomor
@@ -2058,13 +2082,6 @@ public function index(Request $request)
      * ==================================================
      * COPY STYLE SATU BARIS
      * ==================================================
-     *
-     * PENTING:
-     * Tidak menyalin hyperlink.
-     *
-     * Ini mencegah error:
-     *
-     * PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels.php
      */
     private function copyRowStyle(
         $worksheet,
@@ -2124,7 +2141,7 @@ public function index(Request $request)
 
     /**
      * ==================================================
-     * PASTIKAN BARIS DOKUMEN MEMILIKI STYLE
+     * PASTIKAN STYLE BARIS DOKUMEN
      * ==================================================
      */
     private function ensureDocumentRowStyle(
@@ -2155,9 +2172,7 @@ public function index(Request $request)
                 ->getBottom()
                 ->getBorderStyle();
 
-        if (
-            $hasBorder
-        ) {
+        if ($hasBorder) {
             return;
         }
 
@@ -2216,9 +2231,7 @@ public function index(Request $request)
                     ->getBottom()
                     ->getBorderStyle();
 
-            if (
-                $checkHasBorder
-            ) {
+            if ($checkHasBorder) {
                 $sourceRow =
                     $checkRow;
 
@@ -2239,15 +2252,8 @@ public function index(Request $request)
 
     /**
      * ==================================================
-     * NORMALISASI SEMUA BARIS DOKUMEN
+     * NORMALISASI STYLE
      * ==================================================
-     *
-     * Kalau ada dokumen seperti "coba"
-     * yang sudah punya nama tetapi border/style
-     * kosong, style akan disamakan dengan dokumen
-     * lain.
-     *
-     * NILAI C-I TIDAK DIUBAH.
      */
     private function normalizeDocumentRowStyles(
         $worksheet
@@ -2259,9 +2265,6 @@ public function index(Request $request)
 
         $sourceRow = null;
 
-        /**
-         * Cari baris dokumen yang sudah punya border.
-         */
         for (
             $row = 7;
             $row < $catatanRow;
@@ -2276,9 +2279,7 @@ public function index(Request $request)
                         ->getValue()
                 );
 
-            if (
-                $nama === ''
-            ) {
+            if ($nama === '') {
                 continue;
             }
 
@@ -2306,9 +2307,7 @@ public function index(Request $request)
                     ->getBottom()
                     ->getBorderStyle();
 
-            if (
-                $hasBorder
-            ) {
+            if ($hasBorder) {
                 $sourceRow =
                     $row;
 
@@ -2322,12 +2321,6 @@ public function index(Request $request)
             return;
         }
 
-        /**
-         * Perbaiki hanya baris yang:
-         *
-         * - punya nama dokumen
-         * - tidak punya border
-         */
         for (
             $row = 7;
             $row < $catatanRow;
@@ -2373,9 +2366,7 @@ public function index(Request $request)
                     ->getBottom()
                     ->getBorderStyle();
 
-            if (
-                !$hasBorder
-            ) {
+            if (!$hasBorder) {
                 $this->copyRowStyle(
                     $worksheet,
                     $sourceRow,
@@ -2449,9 +2440,6 @@ public function index(Request $request)
         $highestRow =
             $worksheet->getHighestRow();
 
-        /**
-         * Sudah ada?
-         */
         for (
             $row = 7;
             $row <= $highestRow;
@@ -2476,9 +2464,6 @@ public function index(Request $request)
             }
         }
 
-        /**
-         * Cari dokumen sebelumnya.
-         */
         $targetRow = null;
 
         for (
@@ -2517,29 +2502,18 @@ public function index(Request $request)
         $newRow =
             $targetRow + 1;
 
-        /**
-         * INSERT DAHULU.
-         */
         $worksheet
             ->insertNewRowBefore(
                 $newRow,
                 1
             );
 
-        /**
-         * Setelah insert,
-         * targetRow masih valid karena
-         * dokumen baru berada setelahnya.
-         */
         $this->copyRowStyle(
             $worksheet,
             $targetRow,
             $newRow
         );
 
-        /**
-         * Isi baris baru.
-         */
         foreach (
             range('B', 'I') as $column
         ) {
@@ -2641,9 +2615,6 @@ public function index(Request $request)
                         ->getValue()
                 );
 
-            /**
-             * Routing Slip tidak ditampilkan.
-             */
             if (
                 strtolower(
                     $namaDokumen
@@ -2692,11 +2663,6 @@ public function index(Request $request)
                     $filePath
                 );
 
-        /**
-         * ==================================================
-         * GHOSTSCRIPT
-         * ==================================================
-         */
         $tempFixedPath =
             $fullPath .
             '_fixed.pdf';
@@ -2764,11 +2730,6 @@ public function index(Request $request)
             );
         }
 
-        /**
-         * ==================================================
-         * MPDF
-         * ==================================================
-         */
         $mpdf =
             new \Mpdf\Mpdf([
                 'tempDir' =>
@@ -2812,11 +2773,6 @@ public function index(Request $request)
                 $tplId
             );
 
-            /**
-             * ==================================================
-             * GARIS MERAH
-             * ==================================================
-             */
             $mpdf->SetAlpha(
                 0.5
             );
@@ -2842,11 +2798,6 @@ public function index(Request $request)
                 1
             );
 
-            /**
-             * ==================================================
-             * WATERMARK
-             * ==================================================
-             */
             $watermarkPath =
                 storage_path(
                     'app/public/images/watermark.png'
@@ -2926,11 +2877,6 @@ public function index(Request $request)
             }
         }
 
-        /**
-         * ==================================================
-         * SIMPAN PDF
-         * ==================================================
-         */
         $mpdf->Output(
             $fullPath,
             'F'
