@@ -5,17 +5,20 @@
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#003A8F] to-[#00AEEF] shadow-lg shadow-blue-200">
                 <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4" />
                 </svg>
             </div>
 
             <div>
                 <h2 class="font-bold text-xl text-gray-800 leading-tight">
-                    {{ __('Edit Metode Pembayaran') }}
+                    {{ __('Tambah Sumber Dana') }}
                 </h2>
+
                 <p class="text-xs text-gray-500 mt-0.5">
-                    Perbarui informasi metode pembayaran
+                    Tambahkan sumber dana baru
                 </p>
             </div>
         </div>
@@ -35,8 +38,13 @@
                 transition-all duration-200">
 
                 <svg class="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-1"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
                         d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
 
@@ -56,31 +64,38 @@
 
             {{-- PAGE INTRO --}}
             <div class="mb-6">
+
                 <div class="flex items-center gap-2 mb-2">
 
                     <span class="inline-flex items-center gap-1.5 px-3 py-1
                         rounded-full bg-blue-100 text-[#003A8F]
                         text-xs font-bold border border-blue-200">
 
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                        <svg class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
                                 stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
+                                d="M12 4v16m8-8H4" />
                         </svg>
 
                         PENGATURAN ENVIRONMENT
+
                     </span>
 
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl font-black text-gray-800">
-                    Edit Metode Pembayaran
+                    Tambah Sumber Dana
                 </h1>
 
                 <p class="text-sm text-gray-500 mt-1">
-                    Perbarui data metode pembayaran yang sudah tersimpan di sistem.
+                    Tambahkan data sumber dana baru ke dalam sistem.
                 </p>
+
             </div>
 
 
@@ -89,6 +104,7 @@
                 shadow-[0_20px_60px_-20px_rgba(0,58,143,0.20)]
                 overflow-hidden">
 
+
                 {{-- CARD HEADER --}}
                 <div class="relative overflow-hidden
                     bg-gradient-to-br from-[#003A8F] via-[#0066CC] to-[#00AEEF]
@@ -96,13 +112,16 @@
 
                     {{-- Decorative circles --}}
                     <div class="absolute -right-10 -top-16 w-48 h-48
-                        rounded-full bg-white/10"></div>
+                        rounded-full bg-white/10">
+                    </div>
 
                     <div class="absolute -right-2 -bottom-20 w-40 h-40
-                        rounded-full bg-white/10"></div>
+                        rounded-full bg-white/10">
+                    </div>
 
                     <div class="absolute left-1/2 -top-20 w-32 h-32
-                        rounded-full bg-white/5"></div>
+                        rounded-full bg-white/5">
+                    </div>
 
 
                     <div class="relative flex items-center gap-4">
@@ -123,7 +142,7 @@
                                 <path stroke-linecap="round"
                                     stroke-linejoin="round"
                                     stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    d="M12 4v16m8-8H4" />
 
                             </svg>
 
@@ -137,79 +156,80 @@
 
                                 <span class="text-[11px] uppercase tracking-wider
                                     font-bold text-blue-100">
-                                    Payment Method
+                                    Funding Source
                                 </span>
 
                                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-300"></span>
 
                                 <span class="text-[11px] font-semibold text-blue-100">
-                                    Edit Data
+                                    Tambah Data
                                 </span>
 
                             </div>
 
                             <h3 class="text-xl sm:text-2xl font-black text-white">
-                                Edit Metode Pembayaran
+                                Tambah Sumber Dana
                             </h3>
 
                             <p class="text-sm text-blue-100 mt-1">
-                                Perbarui informasi agar data pembayaran tetap akurat.
+                                Masukkan informasi sumber dana yang akan digunakan.
                             </p>
 
                         </div>
 
                     </div>
+
                 </div>
 
 
                 {{-- FORM --}}
-                <form action="{{ route('payment.update', $paymentMethod->id) }}"
+                <form action="{{ route('funding.store') }}"
                     method="POST"
                     class="p-6 sm:p-8 lg:p-10">
 
                     @csrf
-                    @method('PUT')
 
 
                     {{-- FORM SECTION --}}
                     <div class="space-y-6">
 
-                        {{-- Payment Method Name --}}
+
+                        {{-- Funding Source Name --}}
                         <div>
 
-                            <label for="payment_method_name"
+                            <label for="funding_source_name"
                                 class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
 
                                 <span class="flex h-7 w-7 items-center justify-center
                                     rounded-lg bg-blue-50 text-[#0066CC]">
 
-                                    <svg class="w-4 h-4" fill="none"
+                                    <svg class="w-4 h-4"
+                                        fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z" />
-                                        <path stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.7 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06A2 2 0 116.??" />
+                                            d="M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2" />
+
                                     </svg>
 
                                 </span>
 
                                 <span>
-                                    Nama Metode Pembayaran
+                                    Nama Sumber Dana
                                     <span class="text-red-500">*</span>
                                 </span>
 
                             </label>
 
+
                             <input
                                 type="text"
-                                name="payment_method_name"
-                                id="payment_method_name"
-                                value="{{ old('payment_method_name', $paymentMethod->payment_method_name) }}"
+                                name="funding_source_name"
+                                id="funding_source_name"
+                                value="{{ old('funding_source_name') }}"
                                 required
                                 class="w-full rounded-2xl border-2 border-gray-200
                                 bg-gray-50/70 px-4 py-3.5
@@ -220,25 +240,33 @@
                                 focus:ring-4 focus:ring-blue-100
                                 focus:outline-none
                                 transition-all duration-200
-                                @error('payment_method_name')
+                                @error('funding_source_name')
                                     border-red-400 bg-red-50
                                     focus:border-red-500 focus:ring-red-100
                                 @enderror"
-                                placeholder="Contoh: Transfer Bank">
+                                placeholder="Contoh: APBN">
 
-                            @error('payment_method_name')
+
+                            @error('funding_source_name')
+
                                 <div class="flex items-center gap-2 mt-2 text-sm text-red-600">
+
                                     <svg class="w-4 h-4 flex-shrink-0"
-                                        fill="none" stroke="currentColor"
+                                        fill="none"
+                                        stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+
                                     </svg>
 
                                     {{ $message }}
+
                                 </div>
+
                             @enderror
 
                         </div>
@@ -253,30 +281,32 @@
                                 <span class="flex h-7 w-7 items-center justify-center
                                     rounded-lg bg-blue-50 text-[#0066CC]">
 
-                                    <svg class="w-4 h-4" fill="none"
+                                    <svg class="w-4 h-4"
+                                        fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M4 6h16M4 12h16M4 18h10" />
+
                                     </svg>
 
                                 </span>
 
                                 <span>
                                     Sub Kategori
-                                    <span class="text-red-500">*</span>
                                 </span>
 
                             </label>
+
 
                             <input
                                 type="text"
                                 name="sub_category"
                                 id="sub_category"
-                                value="{{ old('sub_category', $paymentMethod->sub_category) }}"
-                                required
+                                value="{{ old('sub_category') }}"
                                 class="w-full rounded-2xl border-2 border-gray-200
                                 bg-gray-50/70 px-4 py-3.5
                                 text-gray-800 font-medium
@@ -290,21 +320,29 @@
                                     border-red-400 bg-red-50
                                     focus:border-red-500 focus:ring-red-100
                                 @enderror"
-                                placeholder="Contoh: BCA, Mandiri, BNI">
+                                placeholder="Contoh: Operasional">
+
 
                             @error('sub_category')
+
                                 <div class="flex items-center gap-2 mt-2 text-sm text-red-600">
+
                                     <svg class="w-4 h-4 flex-shrink-0"
-                                        fill="none" stroke="currentColor"
+                                        fill="none"
+                                        stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+
                                     </svg>
 
                                     {{ $message }}
+
                                 </div>
+
                             @enderror
 
                         </div>
@@ -319,13 +357,16 @@
                                 <span class="flex h-7 w-7 items-center justify-center
                                     rounded-lg bg-blue-50 text-[#0066CC]">
 
-                                    <svg class="w-4 h-4" fill="none"
+                                    <svg class="w-4 h-4"
+                                        fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M4 6h16M4 12h16M4 18h16" />
+
                                     </svg>
 
                                 </span>
@@ -335,6 +376,7 @@
                                 </span>
 
                             </label>
+
 
                             <textarea
                                 name="description"
@@ -354,21 +396,29 @@
                                     border-red-400 bg-red-50
                                     focus:border-red-500 focus:ring-red-100
                                 @enderror"
-                                placeholder="Jelaskan detail atau kepanjangan dari metode pembayaran ini...">{{ old('description', $paymentMethod->description) }}</textarea>
+                                placeholder="Jelaskan detail atau keterangan sumber dana ini...">{{ old('description') }}</textarea>
+
 
                             @error('description')
+
                                 <div class="flex items-center gap-2 mt-2 text-sm text-red-600">
+
                                     <svg class="w-4 h-4 flex-shrink-0"
-                                        fill="none" stroke="currentColor"
+                                        fill="none"
+                                        stroke="currentColor"
                                         viewBox="0 0 24 24">
+
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+
                                     </svg>
 
                                     {{ $message }}
+
                                 </div>
+
                             @enderror
 
                         </div>
@@ -381,7 +431,8 @@
                             p-5">
 
                             <div class="absolute -right-5 -top-5
-                                w-20 h-20 rounded-full bg-blue-100/50"></div>
+                                w-20 h-20 rounded-full bg-blue-100/50">
+                            </div>
 
                             <div class="relative flex items-start gap-3">
 
@@ -398,21 +449,24 @@
                                         <path stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 01-18 0z" />
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 
                                     </svg>
 
                                 </div>
 
+
                                 <div>
+
                                     <p class="font-bold text-[#003A8F]">
-                                        Informasi Perubahan
+                                        Informasi
                                     </p>
 
                                     <p class="text-sm text-blue-700 mt-1 leading-relaxed">
-                                        Perubahan data akan tersimpan setelah tombol
-                                        <strong>Perbarui</strong> ditekan.
+                                        Data sumber dana akan tersimpan setelah tombol
+                                        <strong>Simpan</strong> ditekan.
                                     </p>
+
                                 </div>
 
                             </div>
@@ -436,16 +490,20 @@
                             hover:bg-gray-200 hover:-translate-y-0.5
                             transition-all duration-200">
 
-                            <svg class="w-5 h-5" fill="none"
+                            <svg class="w-5 h-5"
+                                fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24">
+
                                 <path stroke-linecap="round"
                                     stroke-linejoin="round"
                                     stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
+
                             </svg>
 
                             Batal
+
                         </a>
 
 
@@ -459,7 +517,8 @@
                             active:translate-y-0
                             transition-all duration-200">
 
-                            <svg class="w-5 h-5" fill="none"
+                            <svg class="w-5 h-5"
+                                fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24">
 
@@ -470,7 +529,8 @@
 
                             </svg>
 
-                            Perbarui
+                            Simpan
+
                         </button>
 
                     </div>
